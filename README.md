@@ -1,8 +1,4 @@
-# lie
-<a href="http://promises-aplus.github.com/promises-spec">
-  <img src="http://promises-aplus.github.com/promises-spec/assets/logo-small.png"
-       alt="Promises/A+ logo" title="Promises/A+ 1.1 compliant" align="right" />
-</a> [![Build Status](https://travis-ci.org/calvinmetcalf/lie.svg)](https://travis-ci.org/calvinmetcalf/lie)
+# lie-ts
 
 lie is a small, performant promise library implementing the [Promises/A+ spec](http://promises-aplus.github.com/promises-spec/) (Version 1.1).
 
@@ -17,9 +13,10 @@ new Promise(function(res, rej) {
 })
 ```
 
+And it's smaller than the original, only 1.8 Kb gzipped. 
+
 ```bash
 npm install lie-ts
-
 ```
 
 ```javascript
@@ -28,8 +25,7 @@ var Promise = require('lie-ts');
 
 ## Usage
 
-Either use it with [browserify](http://browserify.org/) (recommended) or grab one of the files from the dist folder:
-
+Grab the file from the dist folder:
 - lie-ts.min.js exposes 'Promise' either as a UMD module or from the global scope, depending on if a CJS or AMD loader is available.
 
 ## API

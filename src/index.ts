@@ -1,15 +1,39 @@
 const _INTERNAL = () => { }
 const _isNode = typeof window === "undefined";
-const _UNHANDLED = ['UNHANDLED'];
-const _REJECTED = ['REJECTED'];
-const _FULFILLED = ['FULFILLED'];
-const _PENDING = ['PENDING'];
+const _UNHANDLED = ['U'];
+const _REJECTED = ['R'];
+const _FULFILLED = ['F'];
+const _PENDING = ['P'];
 
 export class Promise<T> {
 
+    /**
+     * 
+     * @internal
+     * @type {string[]}
+     * @memberOf Promise
+     */
     public _state: string[];
+    /**
+     * 
+     * @internal
+     * @type {_QueueItem[]}
+     * @memberOf Promise
+     */
     public _queue: _QueueItem[];
+    /**
+     * 
+     * @internal
+     * @type {*}
+     * @memberOf Promise
+     */
     public _outcome: any;
+    /**
+     * 
+     * @internal
+     * @type {(string[] | null)}
+     * @memberOf Promise
+     */
     public _handled: string[] | null;
 
     constructor(resolver: (onSuccess:(...T) => void, onFail:(...T) => void) => void) {
@@ -51,6 +75,15 @@ export class Promise<T> {
     }
 
 
+    /**
+     * 
+     * @internal
+     * @static
+     * @param {any} value 
+     * @returns 
+     * 
+     * @memberOf Promise
+     */
     public static resolve(value) {
         if (value instanceof this) {
             return value;
@@ -58,6 +91,15 @@ export class Promise<T> {
         return _handlers.resolve(new Promise(_INTERNAL), value);
     }
 
+    /**
+     * 
+     * @internal
+     * @static
+     * @param {any} reason 
+     * @returns 
+     * 
+     * @memberOf Promise
+     */
     public static reject(reason) {
         return _handlers.reject(new Promise(_INTERNAL), reason);
     }

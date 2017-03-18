@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var _INTERNAL = function () { };
 var _isNode = typeof window === "undefined";
-var _UNHANDLED = ['UNHANDLED'];
-var _REJECTED = ['REJECTED'];
-var _FULFILLED = ['FULFILLED'];
-var _PENDING = ['PENDING'];
+var _UNHANDLED = ['U'];
+var _REJECTED = ['R'];
+var _FULFILLED = ['F'];
+var _PENDING = ['P'];
 var Promise = (function () {
     function Promise(resolver) {
         this._state = _PENDING;
@@ -41,12 +41,30 @@ var Promise = (function () {
         }
         return promise;
     };
+    /**
+     *
+     * @internal
+     * @static
+     * @param {any} value
+     * @returns
+     *
+     * @memberOf Promise
+     */
     Promise.resolve = function (value) {
         if (value instanceof this) {
             return value;
         }
         return _handlers.resolve(new Promise(_INTERNAL), value);
     };
+    /**
+     *
+     * @internal
+     * @static
+     * @param {any} reason
+     * @returns
+     *
+     * @memberOf Promise
+     */
     Promise.reject = function (reason) {
         return _handlers.reject(new Promise(_INTERNAL), reason);
     };
