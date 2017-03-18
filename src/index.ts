@@ -1,6 +1,4 @@
 const _INTERNAL = () => { }
-const _isNode = typeof window === "undefined";
-const _UNHANDLED = ['U'];
 const _REJECTED = ['R'];
 const _FULFILLED = ['F'];
 const _PENDING = ['P'];
@@ -40,9 +38,6 @@ export class Promise<T> {
         this._state = _PENDING;
         this._queue = [];
         this._outcome = void 0;
-        if (_isNode) {
-            this._handled = _UNHANDLED;
-        }
         if (resolver !== _INTERNAL) {
             _safelyResolveThenable(this, resolver);
         }
@@ -58,12 +53,6 @@ export class Promise<T> {
             return this;
         }
         var promise = new Promise(_INTERNAL);
-
-        if (_isNode) {
-            if (this._handled === _UNHANDLED) {
-                this._handled = null;
-            }
-        }
         if (this._state !== _PENDING) {
             var resolver = this._state === _FULFILLED ? onFulfilled : onRejected;
             _unwrap(promise, resolver, this._outcome);
@@ -77,7 +66,6 @@ export class Promise<T> {
 
     /**
      * 
-     * @internal
      * @static
      * @param {any} value 
      * @returns 
@@ -88,12 +76,11 @@ export class Promise<T> {
         if (value instanceof this) {
             return value;
         }
-        return _handlers.resolve(new Promise(_INTERNAL), value);
+        return _handlers._resolve(new Promise(_INTERNAL), value);
     }
 
     /**
      * 
-     * @internal
      * @static
      * @param {any} reason 
      * @returns 
@@ -101,7 +88,7 @@ export class Promise<T> {
      * @memberOf Promise
      */
     public static reject(reason) {
-        return _handlers.reject(new Promise(_INTERNAL), reason);
+        return _handlers._reject(new Promise(_INTERNAL), reason);
     }
 
     public static all(iterable): Promise<any> {
@@ -125,14 +112,14 @@ export class Promise<T> {
             self.resolve(value).then(resolveFromAll, function (error) {
                 if (!called) {
                     called = true;
-                    _handlers.reject(promise, error);
+                    _handlers._reject(promise, error);
                 }
             });
             function resolveFromAll(outValue) {
                 values[i] = outValue;
                 if (++resolved === len && !called) {
                     called = true;
-                    _handlers.resolve(promise, values);
+                    _handlers._resolve(promise, values);
                 }
             }
         }
@@ -152,12 +139,12 @@ export class Promise<T> {
             self.resolve(value).then(function (response) {
                 if (!called) {
                     called = true;
-                    _handlers.resolve(promise, response);
+                    _handlers._resolve(promise, response);
                 }
             }, function (error) {
                 if (!called) {
                     called = true;
-                    _handlers.reject(promise, error);
+                    _handlers._reject(promise, error);
                 }
             });
         }
@@ -197,14 +184,14 @@ export class _QueueItem {
     }
 
     public _callFulfilled(value) {
-        _handlers.resolve(this._promise, value);
+        _handlers._resolve(this._promise, value);
     };
 
     public _otherCallFulfilled(value) {
         _unwrap(this._promise, this._onFulfilled, value);
     };
     public _callRejected(value) {
-        _handlers.reject(this._promise, value);
+        _handlers._reject(this._promise, value);
     };
     public _otherCallRejected(value) {
         _unwrap(this._promise, this._onRejected, value);
@@ -224,13 +211,13 @@ function _unwrap(promise, func, value) {
         try {
             returnValue = func.apply(null, value);
         } catch (e) {
-            return _handlers.reject(promise, e);
+            return _handlers._reject(promise, e);
         }
         
         if (returnValue === promise) {
-            _handlers.reject(promise, new TypeError());
+            _handlers._reject(promise, new TypeError());
         } else {
-            _handlers.resolve(promise, returnValue);
+            _handlers._resolve(promise, returnValue);
         }
         return null;
     });
@@ -243,14 +230,14 @@ function _unwrap(promise, func, value) {
  */
 class _handlers {
 
-    public static resolve(self:Promise<any>, value) {
+    public static _resolve(self:Promise<any>, value) {
         var result = _tryCatch(_getThen, value);
         var thenable = result._value;
         var i = -1;
         var len = self._queue.length;
 
         if (result._status === 'error') {
-            return _handlers.reject(self, result._value);
+            return _handlers._reject(self, result._value);
         }
         
         if (thenable) {
@@ -266,17 +253,10 @@ class _handlers {
     };
 
 
-    public static reject(self:Promise<any>, error) {
+    public static _reject(self:Promise<any>, error) {
         self._state = _REJECTED;
         self._outcome = error;
 
-        if (_isNode && self._handled === _UNHANDLED) {
-            setTimeout(function () {
-                if (self._handled === _UNHANDLED) {
-                    process.emit('unhandledRejection', error, self);
-                }
-            }, 0);
-        }
         var i = -1;
         var len = self._queue.length;
         while (++i < len) {
@@ -319,7 +299,7 @@ function _safelyResolveThenable(self: Promise<any>, thenable: (onSuccess:(...T) 
             return;
         }
         called = true;
-        _handlers.reject(self, value);
+        _handlers._reject(self, value);
     }
 
     function onSuccess(...value) {
@@ -327,7 +307,7 @@ function _safelyResolveThenable(self: Promise<any>, thenable: (onSuccess:(...T) 
             return;
         }
         called = true;
-        _handlers.resolve(self, value);
+        _handlers._resolve(self, value);
     }
 
     function tryToUnwrap() {

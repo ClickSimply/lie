@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var _INTERNAL = function () { };
-var _isNode = typeof window === "undefined";
-var _UNHANDLED = ['U'];
 var _REJECTED = ['R'];
 var _FULFILLED = ['F'];
 var _PENDING = ['P'];
@@ -11,9 +9,6 @@ var Promise = (function () {
         this._state = _PENDING;
         this._queue = [];
         this._outcome = void 0;
-        if (_isNode) {
-            this._handled = _UNHANDLED;
-        }
         if (resolver !== _INTERNAL) {
             _safelyResolveThenable(this, resolver);
         }
@@ -27,11 +22,6 @@ var Promise = (function () {
             return this;
         }
         var promise = new Promise(_INTERNAL);
-        if (_isNode) {
-            if (this._handled === _UNHANDLED) {
-                this._handled = null;
-            }
-        }
         if (this._state !== _PENDING) {
             var resolver = this._state === _FULFILLED ? onFulfilled : onRejected;
             _unwrap(promise, resolver, this._outcome);
@@ -43,7 +33,6 @@ var Promise = (function () {
     };
     /**
      *
-     * @internal
      * @static
      * @param {any} value
      * @returns
@@ -54,11 +43,10 @@ var Promise = (function () {
         if (value instanceof this) {
             return value;
         }
-        return _handlers.resolve(new Promise(_INTERNAL), value);
+        return _handlers._resolve(new Promise(_INTERNAL), value);
     };
     /**
      *
-     * @internal
      * @static
      * @param {any} reason
      * @returns
@@ -66,7 +54,7 @@ var Promise = (function () {
      * @memberOf Promise
      */
     Promise.reject = function (reason) {
-        return _handlers.reject(new Promise(_INTERNAL), reason);
+        return _handlers._reject(new Promise(_INTERNAL), reason);
     };
     Promise.all = function (iterable) {
         var self = this;
@@ -87,14 +75,14 @@ var Promise = (function () {
             self.resolve(value).then(resolveFromAll, function (error) {
                 if (!called) {
                     called = true;
-                    _handlers.reject(promise, error);
+                    _handlers._reject(promise, error);
                 }
             });
             function resolveFromAll(outValue) {
                 values[i] = outValue;
                 if (++resolved === len && !called) {
                     called = true;
-                    _handlers.resolve(promise, values);
+                    _handlers._resolve(promise, values);
                 }
             }
         }
@@ -112,12 +100,12 @@ var Promise = (function () {
             self.resolve(value).then(function (response) {
                 if (!called) {
                     called = true;
-                    _handlers.resolve(promise, response);
+                    _handlers._resolve(promise, response);
                 }
             }, function (error) {
                 if (!called) {
                     called = true;
-                    _handlers.reject(promise, error);
+                    _handlers._reject(promise, error);
                 }
             });
         }
@@ -151,7 +139,7 @@ var _QueueItem = (function () {
         }
     }
     _QueueItem.prototype._callFulfilled = function (value) {
-        _handlers.resolve(this._promise, value);
+        _handlers._resolve(this._promise, value);
     };
     ;
     _QueueItem.prototype._otherCallFulfilled = function (value) {
@@ -159,7 +147,7 @@ var _QueueItem = (function () {
     };
     ;
     _QueueItem.prototype._callRejected = function (value) {
-        _handlers.reject(this._promise, value);
+        _handlers._reject(this._promise, value);
     };
     ;
     _QueueItem.prototype._otherCallRejected = function (value) {
@@ -183,13 +171,13 @@ function _unwrap(promise, func, value) {
             returnValue = func.apply(null, value);
         }
         catch (e) {
-            return _handlers.reject(promise, e);
+            return _handlers._reject(promise, e);
         }
         if (returnValue === promise) {
-            _handlers.reject(promise, new TypeError());
+            _handlers._reject(promise, new TypeError());
         }
         else {
-            _handlers.resolve(promise, returnValue);
+            _handlers._resolve(promise, returnValue);
         }
         return null;
     });
@@ -202,13 +190,13 @@ function _unwrap(promise, func, value) {
 var _handlers = (function () {
     function _handlers() {
     }
-    _handlers.resolve = function (self, value) {
+    _handlers._resolve = function (self, value) {
         var result = _tryCatch(_getThen, value);
         var thenable = result._value;
         var i = -1;
         var len = self._queue.length;
         if (result._status === 'error') {
-            return _handlers.reject(self, result._value);
+            return _handlers._reject(self, result._value);
         }
         if (thenable) {
             _safelyResolveThenable(self, thenable);
@@ -223,16 +211,9 @@ var _handlers = (function () {
         return self;
     };
     ;
-    _handlers.reject = function (self, error) {
+    _handlers._reject = function (self, error) {
         self._state = _REJECTED;
         self._outcome = error;
-        if (_isNode && self._handled === _UNHANDLED) {
-            setTimeout(function () {
-                if (self._handled === _UNHANDLED) {
-                    process.emit('unhandledRejection', error, self);
-                }
-            }, 0);
-        }
         var i = -1;
         var len = self._queue.length;
         while (++i < len) {
@@ -279,7 +260,7 @@ function _safelyResolveThenable(self, thenable) {
             return;
         }
         called = true;
-        _handlers.reject(self, value);
+        _handlers._reject(self, value);
     }
     function onSuccess() {
         var value = [];
@@ -290,7 +271,7 @@ function _safelyResolveThenable(self, thenable) {
             return;
         }
         called = true;
-        _handlers.resolve(self, value);
+        _handlers._resolve(self, value);
     }
     function tryToUnwrap() {
         thenable(onSuccess, onError);
