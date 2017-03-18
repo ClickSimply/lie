@@ -8,23 +8,29 @@ lie is a small, performant promise library implementing the [Promises/A+ spec](h
 
 Originally a fork of [Ruben Verborgh](https://github.com/RubenVerborgh)'s [promiscuous](https://github.com/RubenVerborgh/promiscuous), with version 2.6 it became a fork of [ayepromise](https://github.com/cburgmer/ayepromise) by [Chris Burgmer](https://github.com/cburgmer).
 
+... and now it's been forked again, converted to typescript, and has the ability to do this now:
+```ts
+new Promise(function(res, rej) {
+    res(1,2,3);
+}).then(function(v1,v2,v3) {
+    console.log(v1,v2,v3) // <= 1, 2, 3
+})
+```
+
 ```bash
-npm install lie
+npm install lie-ts
 
 ```
 
 ```javascript
-var Promise = require('lie');
-// or use the pollyfill
-require('lie/polyfill');
+var Promise = require('lie-ts');
 ```
 
 ## Usage
 
 Either use it with [browserify](http://browserify.org/) (recommended) or grab one of the files from the dist folder:
 
-- lie.js/lie.min.js exposes 'Promise' either as a UMD module or from the global scope, depending on if a CJS or AMD loader is available.
-- lie.polyfill.js/lie.polyfill.min.js adds 'Promise' to the global scope only if it's not already defined (not a UMD).
+- lie-ts.min.js exposes 'Promise' either as a UMD module or from the global scope, depending on if a CJS or AMD loader is available.
 
 ## API
 
