@@ -4,6 +4,7 @@ var _INTERNAL = function () { };
 var _REJECTED = ['R'];
 var _FULFILLED = ['F'];
 var _PENDING = ['P'];
+var setFast = typeof setImmediate !== "undefined" ? setImmediate : setTimeout;
 var Promise = (function () {
     function Promise(resolver) {
         this._state = _PENDING;
@@ -165,7 +166,7 @@ exports._QueueItem = _QueueItem;
  * @param {any} value
  */
 function _unwrap(promise, func, value) {
-    setTimeout(function () {
+    setFast(function () {
         var returnValue;
         try {
             returnValue = func.apply(null, value);

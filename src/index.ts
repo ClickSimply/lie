@@ -3,6 +3,8 @@ const _REJECTED = ['R'];
 const _FULFILLED = ['F'];
 const _PENDING = ['P'];
 
+const setFast = typeof setImmediate !== "undefined" ? setImmediate : setTimeout;
+
 export class Promise<T> {
 
     /**
@@ -206,7 +208,7 @@ export class _QueueItem {
  * @param {any} value 
  */
 function _unwrap(promise, func, value) {
-    setTimeout(function () {
+    setFast(function () {
         var returnValue;
         try {
             returnValue = func.apply(null, value);

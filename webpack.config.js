@@ -16,6 +16,9 @@ var options = {
         libraryTarget: 'umd',
         umdNamedDefine: true
     },
+    node: {
+        setImmediate: false
+    },
     resolve: {
         extensions: ['.ts', '.tsx', '.js']
     },
