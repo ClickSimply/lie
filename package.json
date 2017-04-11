@@ -1,7 +1,7 @@
 {
     "name": "lie-ts",
-    "version": "3.1.7",
-    "description": "A basic but performant promise implementation, converted to Typescript",
+    "version": "3.2",
+    "description": "A basic and performant promise implementation, converted to Typescript",
     "license": "MIT",
     "repository": {
         "type": "git",

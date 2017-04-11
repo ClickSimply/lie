@@ -13,7 +13,7 @@ new Promise(function(res, rej) {
 })
 ```
 
-And it's smaller than the original, only 1.2 Kb gzipped. 
+And it's smaller than the original, only 1.5 Kb gzipped **with the setImmediate polyfill included!**. 
 
 ```bash
 npm install lie-ts
