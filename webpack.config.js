@@ -17,7 +17,8 @@ var options = {
         umdNamedDefine: true
     },
     node: {
-        setImmediate: false
+        setImmediate: false,
+        process: false
     },
     resolve: {
         extensions: ['.ts', '.tsx', '.js']

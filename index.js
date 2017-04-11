@@ -1,10 +1,56 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+// stolen from https://github.com/Octane/setImmediate
+// convertd to NodeJS friendly syntax
+var uid = 0;
+var storage = {};
+var firstCall = true;
+var slice = Array.prototype.slice;
+var message = 'setIlMessage';
+var fastApply = function (args) {
+    var func = args[0];
+    switch (args.length) {
+        case 1:
+            return func();
+        case 2:
+            return func(args[1]);
+        case 3:
+            return func(args[1], args[2]);
+    }
+    return func.apply(window, slice.call(args, 1));
+};
+var callback = function (event) {
+    var key = event.data;
+    var data;
+    if (typeof key == 'string' && key.indexOf(message) == 0) {
+        data = storage[key];
+        if (data) {
+            delete storage[key];
+            fastApply(data);
+        }
+    }
+};
+var setImmediatePolyfill = function () {
+    var id = uid++;
+    var key = message + id;
+    var i = arguments.length;
+    var args = new Array(i);
+    while (i--) {
+        args[i] = arguments[i];
+    }
+    storage[key] = args;
+    if (firstCall) {
+        firstCall = false;
+        window.addEventListener('message', callback);
+    }
+    window.postMessage(key, '*');
+    return id;
+};
+var setFast = (typeof process === "undefined") ? setImmediatePolyfill : setImmediate;
 var _INTERNAL = function () { };
 var _REJECTED = ['R'];
 var _FULFILLED = ['F'];
 var _PENDING = ['P'];
-var setFast = typeof setImmediate !== "undefined" ? setImmediate : setTimeout;
 var Promise = (function () {
     function Promise(resolver) {
         this._state = _PENDING;
