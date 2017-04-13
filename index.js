@@ -30,7 +30,7 @@ var callback = function (event) {
         }
     }
 };
-exports.setImmediatePolyfill = function () {
+var setImmediatePolyfill = function () {
     var args = [];
     for (var _i = 0; _i < arguments.length; _i++) {
         args[_i] = arguments[_i];
@@ -45,7 +45,7 @@ exports.setImmediatePolyfill = function () {
     window.postMessage(key, '*');
     return id;
 };
-var setFast = (typeof process === "undefined") ? exports.setImmediatePolyfill : setImmediate;
+exports.setFast = (typeof process === "undefined") ? setImmediatePolyfill : setImmediate;
 var _INTERNAL = function () { };
 var _REJECTED = ['R'];
 var _FULFILLED = ['F'];
@@ -211,7 +211,7 @@ exports._QueueItem = _QueueItem;
  * @param {any} value
  */
 function _unwrap(promise, func, value) {
-    setFast(function () {
+    exports.setFast(function () {
         var returnValue;
         try {
             returnValue = func.apply(null, value);

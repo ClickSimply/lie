@@ -31,7 +31,7 @@ const callback = (event) => {
     }
 }
 
-export const setImmediatePolyfill = function(...args:Function[]) {
+const setImmediatePolyfill = function(...args:Function[]) {
     var id = uid++;
     var key = message + id;
     storage[key] = args;
@@ -43,7 +43,7 @@ export const setImmediatePolyfill = function(...args:Function[]) {
     return id;
 };
 
-const setFast = (typeof process === "undefined") ? setImmediatePolyfill : setImmediate;
+export const setFast = (typeof process === "undefined") ? setImmediatePolyfill : setImmediate;
 
 const _INTERNAL = () => { }
 const _REJECTED = ['R'];
