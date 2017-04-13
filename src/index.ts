@@ -31,7 +31,7 @@ const callback = (event) => {
     }
 }
 
-const setImmediatePolyfill = function() {
+export const setImmediatePolyfill = function() {
     var id = uid++;
     var key = message + id;
     var i = arguments.length;

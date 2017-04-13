@@ -1,3 +1,4 @@
+export declare const setImmediatePolyfill: () => number;
 export declare class Promise<T> {
     constructor(resolver: (onSuccess: (...T) => void, onFail: (...T) => void) => void);
     catch(onRejected: any): Promise<{}>;

@@ -30,7 +30,7 @@ var callback = function (event) {
         }
     }
 };
-var setImmediatePolyfill = function () {
+exports.setImmediatePolyfill = function () {
     var id = uid++;
     var key = message + id;
     var i = arguments.length;
@@ -46,7 +46,7 @@ var setImmediatePolyfill = function () {
     window.postMessage(key, '*');
     return id;
 };
-var setFast = (typeof process === "undefined") ? setImmediatePolyfill : setImmediate;
+var setFast = (typeof process === "undefined") ? exports.setImmediatePolyfill : setImmediate;
 var _INTERNAL = function () { };
 var _REJECTED = ['R'];
 var _FULFILLED = ['F'];
