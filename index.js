@@ -31,13 +31,12 @@ var callback = function (event) {
     }
 };
 exports.setImmediatePolyfill = function () {
+    var args = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        args[_i] = arguments[_i];
+    }
     var id = uid++;
     var key = message + id;
-    var i = arguments.length;
-    var args = new Array(i);
-    while (i--) {
-        args[i] = arguments[i];
-    }
     storage[key] = args;
     if (firstCall) {
         firstCall = false;

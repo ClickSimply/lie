@@ -31,14 +31,9 @@ const callback = (event) => {
     }
 }
 
-export const setImmediatePolyfill = function() {
+export const setImmediatePolyfill = function(...args:Function[]) {
     var id = uid++;
     var key = message + id;
-    var i = arguments.length;
-    var args = new Array(i);
-    while (i--) {
-        args[i] = arguments[i];
-    }
     storage[key] = args;
     if (firstCall) {
         firstCall = false;
