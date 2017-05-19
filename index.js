@@ -107,6 +107,10 @@ var Promise = (function () {
         return new Promise(function (resolve, reject) {
             var results = [];
             var ptr = 0;
+            if (!iterable.length) {
+                resolve([]);
+                return;
+            }
             var next = function () {
                 if (ptr < iterable.length) {
                     iterable[ptr].then(function () {
@@ -134,6 +138,10 @@ var Promise = (function () {
         var t = this;
         return new Promise(function (resolve, reject) {
             var results = [];
+            if (!iterable.length) {
+                resolve([]);
+                return;
+            }
             var maybeReturn = function (index, success, failure) {
                 if (failure !== undefined) {
                     results.push(failure);

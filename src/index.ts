@@ -144,6 +144,11 @@ export class Promise<T> {
             let results: any[] = [];
             let ptr = 0;
 
+            if(!iterable.length) {
+                resolve([]);
+                return;
+            }
+
             const next = () => {
                 if (ptr < iterable.length) {
                     iterable[ptr].then((...res) => {
@@ -168,6 +173,11 @@ export class Promise<T> {
         let t = this;
         return new Promise((resolve, reject) => {
             let results: any[] = [];
+
+            if(!iterable.length) {
+                resolve([]);
+                return;
+            }
 
             const maybeReturn = (index: number, success, failure) => {
                 if(failure !== undefined) {
