@@ -138,38 +138,57 @@ export class Promise<T> {
         return _handlers._reject(new Promise(_INTERNAL), reason);
     }
 
-    public static all(iterable): Promise<any> {
-        let self = this;
-        let len = iterable.length;
-        let called = false;
-        let values = new Array(len);
-        let resolved = 0;
-        let i = -1;
-        let promise = new Promise(_INTERNAL);
+    public static chain(iterable: Promise<any>[]): Promise<any> {
+        let t = this;
+        return new Promise((resolve, reject) => {
+            let results: any[] = [];
+            let ptr = 0;
 
-        if (!len) {
-            return this.resolve([]);
-        }
-
-        while (++i < len) {
-            allResolver(iterable[i], i);
-        }
-        return promise;
-        function allResolver(value, i) {
-            self.resolve(value).then(resolveFromAll, function (error) {
-                if (!called) {
-                    called = true;
-                    _handlers._reject(promise, error);
-                }
-            });
-            function resolveFromAll(outValue) {
-                values[i] = outValue;
-                if (++resolved === len && !called) {
-                    called = true;
-                    _handlers._resolve(promise, values);
+            const next = () => {
+                if (ptr < iterable.length) {
+                    iterable[ptr].then((...res) => {
+                        results.push(res);
+                        ptr++;
+                        next();
+                    }).catch((e) => {
+                        results.push(e);
+                        ptr++;
+                        next();
+                    })
+                } else {
+                    resolve(results);
                 }
             }
-        }
+
+            next();
+        });
+    }
+
+    public static all(iterable: Promise<any>[]): Promise<any> {
+        let t = this;
+        return new Promise((resolve, reject) => {
+            let results: any[] = [];
+
+            const maybeReturn = (index: number, success, failure) => {
+                if(failure !== undefined) {
+                    results.push(failure);
+                } else {
+                    results.push(success);
+                }
+
+                if(results.length == iterable.length) {
+                    resolve(results);
+                }
+            };
+
+            for (let i = 0; i < iterable.length; i++) {
+                iterable[i].then((...res) => {
+                    maybeReturn(i, res, undefined);
+                }).catch((e) => {
+                    maybeReturn(i, undefined, e);
+                })
+            }
+        });
     }
 
     public static race(iterable) {

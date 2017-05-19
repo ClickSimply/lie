@@ -102,36 +102,64 @@ var Promise = (function () {
     Promise.reject = function (reason) {
         return _handlers._reject(new Promise(_INTERNAL), reason);
     };
+    Promise.chain = function (iterable) {
+        var t = this;
+        return new Promise(function (resolve, reject) {
+            var results = [];
+            var ptr = 0;
+            var next = function () {
+                if (ptr < iterable.length) {
+                    iterable[ptr].then(function () {
+                        var res = [];
+                        for (var _i = 0; _i < arguments.length; _i++) {
+                            res[_i] = arguments[_i];
+                        }
+                        results.push(res);
+                        ptr++;
+                        next();
+                    }).catch(function (e) {
+                        results.push(e);
+                        ptr++;
+                        next();
+                    });
+                }
+                else {
+                    resolve(results);
+                }
+            };
+            next();
+        });
+    };
     Promise.all = function (iterable) {
-        var self = this;
-        var len = iterable.length;
-        var called = false;
-        var values = new Array(len);
-        var resolved = 0;
-        var i = -1;
-        var promise = new Promise(_INTERNAL);
-        if (!len) {
-            return this.resolve([]);
-        }
-        while (++i < len) {
-            allResolver(iterable[i], i);
-        }
-        return promise;
-        function allResolver(value, i) {
-            self.resolve(value).then(resolveFromAll, function (error) {
-                if (!called) {
-                    called = true;
-                    _handlers._reject(promise, error);
+        var t = this;
+        return new Promise(function (resolve, reject) {
+            var results = [];
+            var maybeReturn = function (index, success, failure) {
+                if (failure !== undefined) {
+                    results.push(failure);
                 }
-            });
-            function resolveFromAll(outValue) {
-                values[i] = outValue;
-                if (++resolved === len && !called) {
-                    called = true;
-                    _handlers._resolve(promise, values);
+                else {
+                    results.push(success);
                 }
+                if (results.length == iterable.length) {
+                    resolve(results);
+                }
+            };
+            var _loop_1 = function (i) {
+                iterable[i].then(function () {
+                    var res = [];
+                    for (var _i = 0; _i < arguments.length; _i++) {
+                        res[_i] = arguments[_i];
+                    }
+                    maybeReturn(i, res, undefined);
+                }).catch(function (e) {
+                    maybeReturn(i, undefined, e);
+                });
+            };
+            for (var i = 0; i < iterable.length; i++) {
+                _loop_1(i);
             }
-        }
+        });
     };
     Promise.race = function (iterable) {
         var self = this;
