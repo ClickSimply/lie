@@ -21,7 +21,6 @@ export declare class Promise<T> {
      * @memberOf Promise
      */
     static reject(reason: any): Promise<any>;
-    static chain(iterable: Promise<any>[]): Promise<any>;
     static all(iterable: Promise<any>[]): Promise<any>;
     static race(iterable: any): Promise<any>;
 }

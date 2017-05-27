@@ -120,9 +120,7 @@ export class Promise<T> {
      * @memberOf Promise
      */
     public static resolve(value) {
-        if (value instanceof this) {
-            return value;
-        }
+        if (value instanceof this) return value;
         return _handlers._resolve(new Promise(_INTERNAL), value);
     }
 
@@ -136,37 +134,6 @@ export class Promise<T> {
      */
     public static reject(reason) {
         return _handlers._reject(new Promise(_INTERNAL), reason);
-    }
-
-    public static chain(iterable: Promise<any>[]): Promise<any> {
-        let t = this;
-        return new Promise((resolve, reject) => {
-            let results: any[] = [];
-            let ptr = 0;
-
-            if(!iterable.length) {
-                resolve([]);
-                return;
-            }
-
-            const next = () => {
-                if (ptr < iterable.length) {
-                    iterable[ptr].then((...res) => {
-                        results.push(res);
-                        ptr++;
-                        next();
-                    }).catch((e) => {
-                        results.push(e);
-                        ptr++;
-                        next();
-                    })
-                } else {
-                    resolve(results);
-                }
-            }
-
-            next();
-        });
     }
 
     public static all(iterable: Promise<any>[]): Promise<any> {

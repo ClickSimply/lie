@@ -86,9 +86,8 @@ var Promise = (function () {
      * @memberOf Promise
      */
     Promise.resolve = function (value) {
-        if (value instanceof this) {
+        if (value instanceof this)
             return value;
-        }
         return _handlers._resolve(new Promise(_INTERNAL), value);
     };
     /**
@@ -101,38 +100,6 @@ var Promise = (function () {
      */
     Promise.reject = function (reason) {
         return _handlers._reject(new Promise(_INTERNAL), reason);
-    };
-    Promise.chain = function (iterable) {
-        var t = this;
-        return new Promise(function (resolve, reject) {
-            var results = [];
-            var ptr = 0;
-            if (!iterable.length) {
-                resolve([]);
-                return;
-            }
-            var next = function () {
-                if (ptr < iterable.length) {
-                    iterable[ptr].then(function () {
-                        var res = [];
-                        for (var _i = 0; _i < arguments.length; _i++) {
-                            res[_i] = arguments[_i];
-                        }
-                        results.push(res);
-                        ptr++;
-                        next();
-                    }).catch(function (e) {
-                        results.push(e);
-                        ptr++;
-                        next();
-                    });
-                }
-                else {
-                    resolve(results);
-                }
-            };
-            next();
-        });
     };
     Promise.all = function (iterable) {
         var t = this;
