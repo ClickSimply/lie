@@ -1,10 +1,14 @@
-# lie-ts
+# Lie-TS
 
-lie is a small, performant promise library implementing the [Promises/A+ spec](http://promises-aplus.github.com/promises-spec/) (Version 1.1).
+The smallest, quickest TypeScript promise library available.
 
-Originally a fork of [Ruben Verborgh](https://github.com/RubenVerborgh)'s [promiscuous](https://github.com/RubenVerborgh/promiscuous), with version 2.6 it became a fork of [ayepromise](https://github.com/cburgmer/ayepromise) by [Chris Burgmer](https://github.com/cburgmer).
+Forked from the orginal Lie JS promise lib and includes it's own setImmediate polyfill, significantly reducing the effective size compared to the original library. 
 
-... and now it's been forked again, converted to typescript, and has the ability to do this now:
+- Entire lib is self contained and only 1.5 kb gzipped.  
+- Runs easily in NodeJS and any modern browser, including IE8+.
+- setImmediate polyfill has been ported from [here](https://github.com/Octane/setImmediate) and it's crazy fast.
+
+Also includes a new special tricK:
 ```ts
 new Promise(function(res, rej) {
     res(1,2,3);
@@ -13,20 +17,25 @@ new Promise(function(res, rej) {
 })
 ```
 
-And it's smaller than the original, only 1.5 Kb gzipped **with the setImmediate polyfill included!**. 
+## Install
 
 ```bash
 npm install lie-ts
 ```
 
-```javascript
-var Promise = require('lie-ts');
-```
+You can also grab the compressed, minified file fom the `/dist` folder of this repository.
 
 ## Usage
 
-Grab the file from the dist folder:
-- lie-ts.min.js exposes 'Promise' either as a UMD module or from the global scope, depending on if a CJS or AMD loader is available.
+```javascript
+// Common JS/node
+var Promise = require('lie-ts').Promise;
+
+// ES6/ Typescript
+import { Promise } from "lie-ts";
+```
+
+You can also just drop the minified lib from the `/dist` folder directly into a `<script>` tag or load it in with an AMD loader.
 
 ## API
 

@@ -22,5 +22,5 @@ export declare class Promise<T> {
      */
     static reject(reason: any): Promise<any>;
     static all(iterable: Promise<any>[]): Promise<any>;
-    static race(iterable: any): Promise<any>;
+    static race(iterable: Promise<any>[]): Promise<any>;
 }

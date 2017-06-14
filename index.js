@@ -45,7 +45,7 @@ var setImmediatePolyfill = function () {
     window.postMessage(key, '*');
     return id;
 };
-exports.setFast = (typeof process === "undefined") ? setImmediatePolyfill : setImmediate;
+exports.setFast = (typeof process === "undefined" || typeof process.platform === "undefined") ? setImmediatePolyfill : setImmediate;
 var _INTERNAL = function () { };
 var _REJECTED = ['R'];
 var _FULFILLED = ['F'];

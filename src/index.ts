@@ -43,7 +43,7 @@ const setImmediatePolyfill = function(...args:Function[]) {
     return id;
 };
 
-export const setFast = (typeof process === "undefined") ? setImmediatePolyfill : setImmediate;
+export const setFast = (typeof process === "undefined" || typeof process.platform === "undefined") ? setImmediatePolyfill : setImmediate;
 
 const _INTERNAL = () => { }
 const _REJECTED = ['R'];
@@ -168,7 +168,7 @@ export class Promise<T> {
         });
     }
 
-    public static race(iterable) {
+    public static race(iterable: Promise<any>[]) {
         var self = this;
         var len = iterable.length;
         var called = false;
