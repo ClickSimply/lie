@@ -68,6 +68,19 @@ Promise.race([
 // either resolves or rejects depending on the first value to do so
 ```
 
+## A Little Bonus
+
+The setImmediate polyfill is exposed as `setFast`, an isomorphic polyfill for setImmediate.
+
+```ts
+import { setFast } from "lie-ts"
+
+setFast(() => {
+    console.log("This will happen very quickly!")
+});
+
+```
+
 ## Unhandled Rejections
 
 In Node.js, lie emits an `unhandledRejection` event when a rejected promise isn't caught, in line with [how io.js does it](https://iojs.org/api/process.html#process_event_unhandledrejection). This allows it to act as a promise shim in both Node.js and the browser.

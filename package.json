@@ -1,7 +1,7 @@
 {
     "name": "lie-ts",
     "version": "3.3.0",
-    "description": "A basic and performant promise implementation, converted to Typescript",
+    "description": "The smallest & Fastest TS Promise lib.",
     "license": "MIT",
     "repository": {
         "type": "git",
@@ -15,7 +15,18 @@
         "promise",
         "async",
         "aplus",
-        "typescript"
+        "typescript",
+        "performance",
+        "promises-a",
+        "promises-aplus",
+        "deferred",
+        "deferreds",
+        "future",
+        "flow control",
+        "dsl",
+        "fluent interface",
+        "setImmediate",
+        "setTimeout"
     ],
     "main": "index.js",
     "scripts": {
