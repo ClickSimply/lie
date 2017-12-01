@@ -36,7 +36,11 @@ const setImmediatePolyfill = function(...args: any[]) {
     return id;
 };
 
-export const setFast = canSetImmediate ? setImmediate : (canPost ? setImmediatePolyfill : (...args: any[]) => {
+export const setFast = canSetImmediate ? (...args: any[]) => {
+    setImmediate(()=> {
+        fastApply(args);
+    })
+} : (canPost ? setImmediatePolyfill : (...args: any[]) => {
     setTimeout(() => {
         fastApply(args);
     }, 0);

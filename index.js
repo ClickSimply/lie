@@ -36,7 +36,15 @@ var setImmediatePolyfill = function () {
     window.postMessage(key, '*');
     return id;
 };
-exports.setFast = canSetImmediate ? setImmediate : (canPost ? setImmediatePolyfill : function () {
+exports.setFast = canSetImmediate ? function () {
+    var args = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        args[_i] = arguments[_i];
+    }
+    setImmediate(function () {
+        fastApply(args);
+    });
+} : (canPost ? setImmediatePolyfill : function () {
     var args = [];
     for (var _i = 0; _i < arguments.length; _i++) {
         args[_i] = arguments[_i];
