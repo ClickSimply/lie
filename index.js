@@ -4,25 +4,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // convertd to NodeJS friendly syntax
 var uid = 0;
 var storage = {};
-var firstCall = true;
 var slice = Array.prototype.slice;
-var message = 'setIlMessage';
+var message = 'setMsg';
+var canSetImmediate = typeof setImmediate !== 'undefined';
+var canPost = typeof window !== 'undefined' && window.postMessage && window.addEventListener;
 var fastApply = function (args) {
-    var func = args[0];
-    switch (args.length) {
-        case 1:
-            return func();
-        case 2:
-            return func(args[1]);
-        case 3:
-            return func(args[1], args[2]);
-    }
-    return func.apply(window, slice.call(args, 1));
+    return args[0].apply(window, slice.call(args, 1));
 };
 var callback = function (event) {
     var key = event.data;
     var data;
-    if (typeof key == 'string' && key.indexOf(message) == 0) {
+    if (typeof key == 'string' && key.indexOf(message) === 0) {
         data = storage[key];
         if (data) {
             delete storage[key];
@@ -30,6 +22,9 @@ var callback = function (event) {
         }
     }
 };
+if (typeof window !== "undefined") {
+    window.addEventListener('message', callback);
+}
 var setImmediatePolyfill = function () {
     var args = [];
     for (var _i = 0; _i < arguments.length; _i++) {
@@ -38,14 +33,18 @@ var setImmediatePolyfill = function () {
     var id = uid++;
     var key = message + id;
     storage[key] = args;
-    if (firstCall) {
-        firstCall = false;
-        window.addEventListener('message', callback);
-    }
     window.postMessage(key, '*');
     return id;
 };
-exports.setFast = (typeof process === "undefined" || typeof process.platform === "undefined") ? setImmediatePolyfill : setImmediate;
+exports.setFast = canSetImmediate ? setImmediate : (canPost ? setImmediatePolyfill : function () {
+    var args = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        args[_i] = arguments[_i];
+    }
+    setTimeout(function () {
+        fastApply(args);
+    }, 0);
+});
 var _INTERNAL = function () { };
 var _REJECTED = ['R'];
 var _FULFILLED = ['F'];

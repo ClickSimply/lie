@@ -1,4 +1,4 @@
-export declare const setFast: (...args: Function[]) => number;
+export declare const setFast: (...args: any[]) => void;
 export declare class Promise<T> {
     constructor(resolver: (onSuccess: (...T) => void, onFail: (...T) => void) => void);
     catch(onRejected: any): Promise<{}>;
