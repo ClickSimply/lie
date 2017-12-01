@@ -1,6 +1,6 @@
 {
     "name": "lie-ts",
-    "version": "3.4.0",
+    "version": "3.5.0",
     "description": "The smallest & Fastest TS Promise lib.",
     "license": "MIT",
     "repository": {
