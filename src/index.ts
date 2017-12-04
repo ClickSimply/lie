@@ -9,7 +9,7 @@ const canSetImmediate = typeof setImmediate !== 'undefined';
 const canPost = typeof window !== 'undefined' && window.postMessage && window.addEventListener;
 
 const fastApply = (args) => {
-    return args[0].apply(window, slice.call(args, 1));
+    return args[0].apply(null, slice.call(args, 1));
 }
 
 const callback = (event) => {

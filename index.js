@@ -9,7 +9,7 @@ var message = 'setMsg';
 var canSetImmediate = typeof setImmediate !== 'undefined';
 var canPost = typeof window !== 'undefined' && window.postMessage && window.addEventListener;
 var fastApply = function (args) {
-    return args[0].apply(window, slice.call(args, 1));
+    return args[0].apply(null, slice.call(args, 1));
 };
 var callback = function (event) {
     var key = event.data;
