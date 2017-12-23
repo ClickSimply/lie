@@ -1,3 +1,5 @@
+import { setImmediate } from "timers";
+
 // stolen from https://github.com/Octane/setImmediate
 // convertd to NodeJS friendly syntax
 let uid = 0;
@@ -5,8 +7,11 @@ let storage = {};
 let slice = Array.prototype.slice;
 let message = 'setMsg';
 
-const canSetImmediate = typeof setImmediate !== 'undefined';
+// declare const Promise: any;
+
+const canSetImmediate = typeof window !== 'undefined' && window["setImmediate"] ? window["setImmediate"] : typeof global !== "undefined" && global["setImmediate"] ? global["setImmediate"] : false;
 const canPost = typeof window !== 'undefined' && window.postMessage && window.addEventListener;
+const canPromise =  typeof window !== 'undefined' && window["Promise"] ? window["Promise"] : typeof global !== "undefined" && global["Promise"] ? global["Promise"] : false;
 
 const fastApply = (args) => {
     return args[0].apply(null, slice.call(args, 1));
@@ -28,7 +33,7 @@ if (typeof window !== "undefined") {
     window.addEventListener('message', callback);
 }
 
-const setImmediatePolyfill = function(...args: any[]) {
+const setImmediatePolyfill = (...args: any[]) => {
     var id = uid++;
     var key = message + id;
     storage[key] = args;
@@ -36,15 +41,23 @@ const setImmediatePolyfill = function(...args: any[]) {
     return id;
 };
 
-export const setFast = canSetImmediate ? (...args: any[]) => {
-    setImmediate(()=> {
-        fastApply(args);
-    })
-} : (canPost ? setImmediatePolyfill : (...args: any[]) => {
-    setTimeout(() => {
-        fastApply(args);
-    }, 0);
-});
+export const setFast = (() => {
+    return canSetImmediate ? (...args: any[]) => { // built in setImmediate (bast case)
+        canSetImmediate(() => {
+            fastApply(args);
+        })
+    } : canPromise ? (...args: any[]) => { // built in Promise (second best case)
+        canPromise.resolve().then(() => {
+            fastApply(args);
+        })
+    } : canPost ? setImmediatePolyfill : // built in window messaging (pretty fast, not bad)
+    (...args: any[]) => {
+        setTimeout(() => { // setTimeout, absolute worse case :(
+            fastApply(args);
+        }, 0);
+    };    
+})();
+
 
 const _INTERNAL = () => { }
 const _REJECTED = ['R'];
@@ -88,6 +101,19 @@ export class Promise<T> {
         this._outcome = void 0;
         if (resolver !== _INTERNAL) {
             _safelyResolveThenable(this, resolver);
+        }
+    }
+
+    public static doPolyFill() {
+        if (typeof global !== "undefined") {
+            if (!global["Promise"]) {
+                global["Promise"] = this;
+            }
+        }
+        if (typeof window !== "undefined") {
+            if (!window["Promise"]) {
+                window["Promise"] = this;
+            }
         }
     }
 

@@ -4,9 +4,13 @@ The smallest, quickest TypeScript promise library available.
 
 Forked from the orginal Lie JS promise lib and includes it's own setImmediate polyfill, significantly reducing the effective size compared to the original library. 
 
-- Entire lib is self contained and only 1.5 kb gzipped.  
-- Runs easily in NodeJS and any modern browser, including IE8+.
-- setImmediate polyfill has been ported from [here](https://github.com/Octane/setImmediate) and it's crazy fast.
+- Entire lib is self contained and only 1.6 kb gzipped.  
+- Runs easily in NodeJS and any modern browser, including IE9+.
+- Autodetects best `setImediate` method and uses it.  Checks in this order for these methods:
+1. Built in `setImediate` method attached to window or global object.
+2. If `window.Promise` or `global.Promise` exists, uses `Promise.resolve().then...`
+3. If `window.postMessage` is possible, uses an ultra fast messaging method to polyfill setImediate.
+4. Finally falls back to `setTimeout` if everything else fails.
 
 Also includes a new special tricK:
 ```ts
@@ -33,6 +37,9 @@ var Promise = require('lie-ts').Promise;
 
 // ES6/ Typescript
 import { Promise } from "lie-ts";
+
+// Take over global/window Promise object *if it doesn't exist already*.
+Promise.doPolyfill();
 ```
 
 You can also just drop the minified lib from the `/dist` folder directly into a `<script>` tag or load it in with an AMD loader.
@@ -70,14 +77,15 @@ Promise.race([
 
 ## A Little Bonus
 
-The setImmediate polyfill is exposed as `setFast`, an isomorphic polyfill for setImmediate.
+The isomorphic setImmediate polyfill described at the top is exposed as `setFast`.
 
 ```ts
-import { setFast } from "lie-ts"
+import { setFast } from "lie-ts";
 
-setFast(() => {
+setFast((a, b, c) => {
+    console.log(a, b, c) // <= "args", "to", "pass"
     console.log("This will happen very quickly!")
-});
+}, "args", "to", "pass");
 
 ```
 

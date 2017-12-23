@@ -18,7 +18,9 @@ var options = {
     },
     node: {
         setImmediate: false,
-        process: false
+        Promise: false,
+        process: false,
+        global: false
     },
     resolve: {
         extensions: ['.ts', '.tsx', '.js']

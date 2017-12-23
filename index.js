@@ -6,8 +6,10 @@ var uid = 0;
 var storage = {};
 var slice = Array.prototype.slice;
 var message = 'setMsg';
-var canSetImmediate = typeof setImmediate !== 'undefined';
+// declare const Promise: any;
+var canSetImmediate = typeof window !== 'undefined' && window["setImmediate"] ? window["setImmediate"] : typeof global !== "undefined" && global["setImmediate"] ? global["setImmediate"] : false;
 var canPost = typeof window !== 'undefined' && window.postMessage && window.addEventListener;
+var canPromise = typeof window !== 'undefined' && window["Promise"] ? window["Promise"] : typeof global !== "undefined" && global["Promise"] ? global["Promise"] : false;
 var fastApply = function (args) {
     return args[0].apply(null, slice.call(args, 1));
 };
@@ -36,23 +38,34 @@ var setImmediatePolyfill = function () {
     window.postMessage(key, '*');
     return id;
 };
-exports.setFast = canSetImmediate ? function () {
-    var args = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        args[_i] = arguments[_i];
-    }
-    setImmediate(function () {
-        fastApply(args);
-    });
-} : (canPost ? setImmediatePolyfill : function () {
-    var args = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        args[_i] = arguments[_i];
-    }
-    setTimeout(function () {
-        fastApply(args);
-    }, 0);
-});
+exports.setFast = (function () {
+    return canSetImmediate ? function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        canSetImmediate(function () {
+            fastApply(args);
+        });
+    } : canPromise ? function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        canPromise.resolve().then(function () {
+            fastApply(args);
+        });
+    } : canPost ? setImmediatePolyfill :
+        function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            setTimeout(function () {
+                fastApply(args);
+            }, 0);
+        };
+})();
 var _INTERNAL = function () { };
 var _REJECTED = ['R'];
 var _FULFILLED = ['F'];
@@ -66,6 +79,18 @@ var Promise = (function () {
             _safelyResolveThenable(this, resolver);
         }
     }
+    Promise.doPolyFill = function () {
+        if (typeof global !== "undefined") {
+            if (!global["Promise"]) {
+                global["Promise"] = this;
+            }
+        }
+        if (typeof window !== "undefined") {
+            if (!window["Promise"]) {
+                window["Promise"] = this;
+            }
+        }
+    };
     Promise.prototype.catch = function (onRejected) {
         return this.then(function () { }, onRejected);
     };
