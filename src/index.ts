@@ -29,7 +29,7 @@ const callback = (event) => {
     }
 }
 
-if (typeof window !== "undefined") {
+if (canPost) {
     window.addEventListener('message', callback);
 }
 

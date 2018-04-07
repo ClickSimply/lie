@@ -24,7 +24,7 @@ var callback = function (event) {
         }
     }
 };
-if (typeof window !== "undefined") {
+if (canPost) {
     window.addEventListener('message', callback);
 }
 var setImmediatePolyfill = function () {
@@ -55,7 +55,7 @@ exports.setFast = (function () {
         canPromise.resolve().then(function () {
             fastApply(args);
         });
-    } : canPost ? setImmediatePolyfill :
+    } : canPost ? setImmediatePolyfill : // built in window messaging (pretty fast, not bad)
         function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
@@ -70,7 +70,7 @@ var _INTERNAL = function () { };
 var _REJECTED = ['R'];
 var _FULFILLED = ['F'];
 var _PENDING = ['P'];
-var Promise = (function () {
+var Promise = /** @class */ (function () {
     function Promise(resolver) {
         this._state = _PENDING;
         this._queue = [];
@@ -207,7 +207,7 @@ exports.Promise = Promise;
  * @export
  * @class _QueueItem
  */
-var _QueueItem = (function () {
+var _QueueItem = /** @class */ (function () {
     function _QueueItem(promise, onFulfilled, onRejected) {
         this._promise = promise;
         if (typeof onFulfilled === 'function') {
@@ -268,7 +268,7 @@ function _unwrap(promise, func, value) {
  * @internal
  * @class _handlers
  */
-var _handlers = (function () {
+var _handlers = /** @class */ (function () {
     function _handlers() {
     }
     _handlers._resolve = function (self, value) {
