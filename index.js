@@ -9,7 +9,6 @@ var message = 'setMsg';
 // declare const Promise: any;
 var canSetImmediate = typeof window !== 'undefined' && window["setImmediate"] ? window["setImmediate"] : typeof global !== "undefined" && global["setImmediate"] ? global["setImmediate"] : false;
 var canPost = typeof window !== 'undefined' && window.postMessage && window.addEventListener;
-var canPromise = typeof window !== 'undefined' && window["Promise"] ? window["Promise"] : typeof global !== "undefined" && global["Promise"] ? global["Promise"] : false;
 var fastApply = function (args) {
     return args[0].apply(null, slice.call(args, 1));
 };
@@ -45,14 +44,6 @@ exports.setFast = (function () {
             args[_i] = arguments[_i];
         }
         canSetImmediate(function () {
-            fastApply(args);
-        });
-    } : canPromise ? function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        canPromise.resolve().then(function () {
             fastApply(args);
         });
     } : canPost ? setImmediatePolyfill : // built in window messaging (pretty fast, not bad)
