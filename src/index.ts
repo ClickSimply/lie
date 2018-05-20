@@ -181,7 +181,7 @@ export class Promise<T> {
             };
 
             for (let i = 0; i < iterable.length; i++) {
-                iterable[i].then((...res) => {
+                iterable[i].then((res) => {
                     maybeReturn(i, res, undefined);
                 }).catch((e) => {
                     maybeReturn(i, undefined, e);

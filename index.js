@@ -144,11 +144,7 @@ var Promise = /** @class */ (function () {
                 }
             };
             var _loop_1 = function (i) {
-                iterable[i].then(function () {
-                    var res = [];
-                    for (var _i = 0; _i < arguments.length; _i++) {
-                        res[_i] = arguments[_i];
-                    }
+                iterable[i].then(function (res) {
                     maybeReturn(i, res, undefined);
                 }).catch(function (e) {
                     maybeReturn(i, undefined, e);
