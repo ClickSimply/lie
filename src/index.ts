@@ -1,5 +1,3 @@
-import { setImmediate } from "timers";
-
 // stolen from https://github.com/Octane/setImmediate
 // convertd to NodeJS friendly syntax
 let uid = 0;
