@@ -7,9 +7,6 @@ let storage = {};
 let slice = Array.prototype.slice;
 let message = 'setMsg';
 
-// declare const Promise: any;
-
-const canSetImmediate = typeof window !== 'undefined' && window["setImmediate"] ? window["setImmediate"] : typeof global !== "undefined" && global["setImmediate"] ? global["setImmediate"] : false;
 const canPost = typeof window !== 'undefined' && window.postMessage && window.addEventListener;
 
 const fastApply = (args) => {
@@ -41,11 +38,7 @@ const setImmediatePolyfill = (...args: any[]) => {
 };
 
 export const setFast = (() => {
-    return canSetImmediate ? (...args: any[]) => { // built in setImmediate (bast case)
-        canSetImmediate(() => {
-            fastApply(args);
-        })
-    } : canPost ? setImmediatePolyfill : // built in window messaging (pretty fast, not bad)
+    return canPost ? setImmediatePolyfill : // built in window messaging (pretty fast, not bad)
     (...args: any[]) => {
         setTimeout(() => { // setTimeout, absolute worse case :(
             fastApply(args);
@@ -116,7 +109,7 @@ export class Promise<T> {
         return this.then(() => {}, onRejected);
     }
 
-    public then(onFulfilled?:(...args) => void, onRejected?:(...args) => void) {
+    public then(onFulfilled?:(...args: T[]) => void, onRejected?:(...args: T[]) => void) {
         if (typeof onFulfilled !== 'function' && this._state === _FULFILLED ||
             typeof onRejected !== 'function' && this._state === _REJECTED) {
             return this;

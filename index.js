@@ -6,8 +6,6 @@ var uid = 0;
 var storage = {};
 var slice = Array.prototype.slice;
 var message = 'setMsg';
-// declare const Promise: any;
-var canSetImmediate = typeof window !== 'undefined' && window["setImmediate"] ? window["setImmediate"] : typeof global !== "undefined" && global["setImmediate"] ? global["setImmediate"] : false;
 var canPost = typeof window !== 'undefined' && window.postMessage && window.addEventListener;
 var fastApply = function (args) {
     return args[0].apply(null, slice.call(args, 1));
@@ -38,15 +36,7 @@ var setImmediatePolyfill = function () {
     return id;
 };
 exports.setFast = (function () {
-    return canSetImmediate ? function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        canSetImmediate(function () {
-            fastApply(args);
-        });
-    } : canPost ? setImmediatePolyfill : // built in window messaging (pretty fast, not bad)
+    return canPost ? setImmediatePolyfill : // built in window messaging (pretty fast, not bad)
         function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {

@@ -3,7 +3,7 @@ export declare class Promise<T> {
     constructor(resolver: (onSuccess: (...T) => void, onFail: (...T) => void) => void);
     static doPolyFill(): void;
     catch(onRejected: any): Promise<{}>;
-    then(onFulfilled?: (...args) => void, onRejected?: (...args) => void): Promise<{}>;
+    then(onFulfilled?: (...args: T[]) => void, onRejected?: (...args: T[]) => void): Promise<{}>;
     /**
      *
      * @static

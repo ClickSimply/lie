@@ -4,13 +4,12 @@ The smallest, quickest TypeScript promise library available.
 
 Forked from the orginal Lie JS promise lib and includes it's own setImmediate polyfill, significantly reducing the effective size compared to the original library. 
 
-- Entire lib is self contained and only 1.6 kb gzipped.  
+- Entire lib is self contained and only 1.5 kb gzipped.  
 - Runs easily in NodeJS and any modern browser, including IE9+.
 - Autodetects best `setImediate` method and uses it.  Checks in this order for these methods:
 1. Built in `setImediate` method attached to window or global object.
-2. If `window.Promise` or `global.Promise` exists, uses `Promise.resolve().then...`
-3. If `window.postMessage` is possible, uses an ultra fast messaging method to polyfill setImediate.
-4. Finally falls back to `setTimeout` if everything else fails.
+2. If `window.postMessage` is possible, uses an ultra fast messaging method to polyfill setImediate.
+3. Finally falls back to `setTimeout` if everything else fails.
 
 Also includes a new special tricK:
 ```ts
